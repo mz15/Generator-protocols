@@ -1,3 +1,4 @@
+'autor: Pleshkov Andrey
 Const sample1 = "Øàáëîí (çàùèòà ÂÊÐ).doc"   'Èìÿ ôàéëà-øàáëîíà ñ ðàñøèðåíèåì (ïî óìîë÷àíèþ)
 Const folder_name1 = "Çàùèòà ÂÊÐ"           'Èìÿ ïàïêè, â êîòîðóþ ñãåíåðèðóþòñÿ ôàéëû (ïî óìîë÷àíèþ)
 Const sample2 = "Øàáëîí (ãîñýêçàìåí).doc"
@@ -24,6 +25,13 @@ Function AssigningValues()
     date_certificate = Range("G3")
     Errors = False
 End Function
+
+Sub Auto_Open()
+ActiveSheet.Unprotect (password)
+Cells.Locked = True
+Range("B3:G3").Locked = False
+ActiveSheet.Protect (password)
+End Sub
 
 Sub Generation1()
     file_folder = Replace(ThisWorkbook.FullName, ThisWorkbook.name, folder_name1 & " " & group) 'Íàçâàíèå ïàïêè, â êîòîðóþ ñãåíåðèðóþòñÿ ôàéëû
@@ -129,11 +137,15 @@ Sub Past()
     ActiveSheet.Unprotect (password)
     Cells.Locked = False
     Range("B6").Select
+    On Error GoTo no_text
     ActiveSheet.PasteSpecial Format:="Òåêñò", Link:=False, DisplayAsIcon:=False
     Selection.Rows.AutoFit
     Cells.Locked = True
     Range("B3:G3").Locked = False
     ActiveSheet.Protect (password)
+    Exit Sub
+no_text:
+    MsgBox "Â áóôåðå îáìåíà äîëæíû ñîäåðæàòüñÿ äàííûå èç ôàéëà MSWord ñî ñïèñêîì òåì è ðóêîâîäèòåëåé!", vbCritical, "Îøèáêà!"
 End Sub
 
 Sub UnlockCells()
@@ -286,9 +298,9 @@ Function GenitiveStudents() 'Ôóíêöèÿ ñêëîíåíèÿ ÔÈÎ ñòóäå
             Errors = True: Exit Function
         End If
         
-        If Len(fname(0)) = 0 Or Len(fname(1)) = 0 Or Len(fname(2)) = 0 Then
-            MsgBox text_msg, vbCritical, "Îøèáêà â ñòîëáöå ""ÔÈÎ ñòóäåíòà"""
+        If Len(fname(0)) = 0 Or Len(fname(1)) = 0 Then
             Range("B" & i).Select
+            MsgBox text_msg, vbCritical, "Îøèáêà â ñòîëáöå ""ÔÈÎ ñòóäåíòà"""
             Errors = True: Exit Function
         End If
         
@@ -317,7 +329,7 @@ Function GenitiveProfessor() 'Ôóíêöèÿ ñêëîíåíèÿ ÔÈÎ ðóêî�
     For i = 6 To last_line_D
         Dim fname$(): fname = Split(Cells(i, "H"))  'Ïðåîáðàçîâàíèå â ìàññèâ ñ òðåìÿ ýëåìåíòàìè
         
-        If Len(fname(0)) = 0 Or Len(fname(1)) = 0 Or Len(fname(2)) = 0 Then GoTo error_full_name
+        If Len(fname(0)) = 0 Or Len(fname(1)) = 0 Then GoTo error_full_name
         surname = fname(0)
         name = fname(1)
         patronymic = fname(2)
