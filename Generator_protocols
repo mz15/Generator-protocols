@@ -1,0 +1,89 @@
+'Const sample = "шаблон.dot"                                                             'Имя файла-шаблона с расширением
+Const file_extensions = ".doc"                                                          'Расширение генерируемых файлов
+Const colomns = 8                                                                       'Кол-во обрабатываемых стобцов (кол-во параметров для замены)
+
+Sub generation_Click()                                                                  'Функция генерации файлов
+
+    Dim file_location As String
+    With Application.FileDialog(msoFileDialogFilePicker)                                'Диалог запроса выбора папки
+        .InitialFileName = Replace(ThisWorkbook.FullName, ThisWorkbook.Name, "Шаблон.dot")
+        .Title = "Выберете файл-шаблон"
+        .AllowMultiSelect = False
+        .ButtonName = "Выбрать"
+        .Show
+        If .SelectedItems.Count = False Then Exit Sub                                   'Если ничего не выбрано, программа завершается
+        file_location = .SelectedItems(1)                                               'Расположение файла-шаблона
+    End With
+
+    Dim file_folder As String
+    With Application.FileDialog(4)                                                      '(msoFileDialogFolderPicker) - диалог запроса выбора файла
+        .InitialFileName = Replace(ThisWorkbook.FullName, ThisWorkbook.Name, " ")
+        .Title = "Выберете папку, куда будут сохранены файлы"
+        .AllowMultiSelect = False
+        .ButtonName = "Выбрать"
+        If .Show = False Then Exit Sub                                                  'Если ничего не выбрано, программа завершается
+        file_folder = .SelectedItems(1) & Application.PathSeparator                     'Расположение выбранной папки, в которую будут сохраняться файлы
+    End With
+
+    last_line = Cells(Rows.Count, "B").End(xlUp).row                                    'Определение последней непустой строки в столбце B
+    number_of_files = last_line - 3                                                     'Количество генерируемых файлов (заполненных строк)
+    
+    If number_of_files < 1 Then MsgBox "Не заданы параметры для генерации файлов!", vbCritical: Exit Sub
+                                                                                        'Если не заданы параметры для генерации хотя бы одного файла
+
+    Dim line As Range
+    Dim WA As Object, WD As Object: Set WA = CreateObject("Word.Application")
+    
+    For Each line In ActiveSheet.Rows("4:" & last_line)                                 'Цикл с 4 строки до последней заполненной
+        With line
+            Name = Trim$(.Cells(2)) & " " & Trim$(.Cells(3)) & " " & Trim$(.Cells(4))   'Присвоение имен генерируемым файлам (3 первых столба)
+            file_name = file_folder & Name & file_extensions                            'Расположение, имя и расширение сгенерированных файлов
+
+            Set WD = WA.Documents.Add(file_location): DoEvents
+
+            For i = 2 To colomns + 1                                                    'Цикл с 1 столбца до числа, равному кол-ву обрабатываемых столбцов
+                FindText = Cells(2, i): ReplaceText = Trim$(.Cells(i))                  'Поиск совпадений с метками и замена на значения в базе данных
+
+                With WD.Range.Find
+                    .Text = FindText                                                    'Метка в шаблоне
+                    .Replacement.Text = ReplaceText                                     'Замена метки текстом из базы данных
+                    .Forward = True                                                     'Направление поиска (вперед/назад)
+                    .MatchCase = True                                                   'Учитывать регистр
+                    .MatchWholeWord = True                                              'Искать слово целиком
+                    .MatchAllWordForms = False                                          'Все словоформы
+                    .Execute Replace:=True                                              'Запуск замены
+                End With
+                DoEvents
+            Next i
+            
+            WD.SaveAs file_name: WD.Close False: DoEvents                               'Сохранений и закрытие созданного файла
+        End With
+    Next line                                                                           'Переход к следующей итерации цикла (строке базы данных)
+
+    WA.Quit False
+    MsgBox "В папке " & file_folder & " создано " & number_of_files & " файлов.", vbInformation, "Создание файлов завершено"
+End Sub
+
+'-----------------------------------------------------
+'Другой способ ввода шаблона и папки:
+
+'Dim Log As Boolean
+'Log = True
+'While Log = True
+'NextIteration:
+'sample = InputBox("Введите имя файла (с расширением) шаблона для генерируемых файлов." _
+'& vbNewLine & vbNewLine & "Например: шаблон.dot", "Шаблон", "шаблон.dot")   'Ввод имени файла шаблона
+'If sample = "" Or sample = " " Then GoTo NextIteration
+'file_location = Replace(ThisWorkbook.FullName, ThisWorkbook.Name, "шаблон.dot")   'Расположение шаблона для генерируемых файлов
+'If Dir(file_location) <> "" Then Log = False Else: MsgBox "Файл  " & sample & "  не найден", vbExclamation, "Файл не найден"                                                                                   'Проверка на существоание файла
+'Wend
+
+'Log = True
+'While Log = True
+'NewFolderName = Replace(ThisWorkbook.FullName, ThisWorkbook.Name, InputBox("Введите имя папки, куда будут сохранены сгенерированные файлы", "Имя папки"))
+'MkDir NewFolderName 'Создание нового каталога (MkDir расположение)
+'If Dir(NewFolderName) = "" Then Log = False Else: MsgBox "неверный"
+'Wend
+
+'file_location = Replace(ThisWorkbook.FullName, ThisWorkbook.Name, sample)              'Расположение шаблона для генерируемых файлов
+'file_folder = NewFolderName & Application.PathSeparator                                'Название папки, в которую сгенерируются файлы
