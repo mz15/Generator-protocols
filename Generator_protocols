@@ -1,4 +1,4 @@
-'autor: Pleshkov Andrey, ITMO University, group 165. 2015
+'autor: Pleshkov Andrey, ITMO University, group 1652. 2015
 Const sample1 = "Øàáëîí (çàùèòà ÂÊÐ).doc"   'Èìÿ ôàéëà-øàáëîíà ñ ðàñøèðåíèåì (ïî óìîë÷àíèþ)
 Const folder_name1 = "Çàùèòà ÂÊÐ"           'Èìÿ ïàïêè, â êîòîðóþ ñãåíåðèðóþòñÿ ôàéëû (ïî óìîë÷àíèþ)
 Const sample2 = "Øàáëîí (ãîñýêçàìåí).doc"
