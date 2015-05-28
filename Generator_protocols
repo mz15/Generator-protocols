@@ -3,7 +3,7 @@ Const folder_name1 = "Çàùèòà ÂÊÐ"    'Èìÿ ïàïêè, â êîòîð�
 Const sample2 = "Øàáëîí (ãîñýêçàìåí).doc"
 Const folder_name2 = "Ãîñýêçàìåí"
 Const file_extensions = ".doc"          'Ðàñøèðåíèå ãåíåðèðóåìûõ ôàéëîâ
-Const colomns = 15                      'Ïîñëåäíèé îáðàáàòûâàåìûé ñòîáöåö
+Const colomns = 18                      'Ïîñëåäíèé îáðàáàòûâàåìûé ñòîáöåö
 Dim folder_location, file_folder, file_location, specialty_code, specialty, date_GEK, date_certificate, degree As String
 Dim group, number_of_files, last_line_A, last_line_B, last_line_C, last_line_D, last_line_H As Integer
 
@@ -40,7 +40,8 @@ Function Generation()   'Ôóíêöèÿ ãåíåðàöèè ôàéëîâ
     If number_of_files < 1 Then MsgBox "Íå çàäàíû ïàðàìåòðû äëÿ ãåíåðàöèè ôàéëîâ!", vbCritical: Exit Function
                                                                    'Åñëè íå çàäàíû ïàðàìåòðû äëÿ ãåíåðàöèè õîòÿ áû îäíîãî ôàéëà
     If last_line_A <> last_line_B Then MsgBox "Îäíà èëè íåñêîëüêî ñòðîê çàïîëíåíû íå ïîëíîñòüþ!", vbCritical: Exit Function
-                                                                                        
+    If IsNumeric(group) And group <> "" Then Else: MsgBox "Íåêîððåêòíî ââåäåí íîìåð ãðóïïû!": Exit Function
+    
     Dim default_setting As String
     default_setting = MsgBox("Ïî óìîë÷àíèþ áóäåò èñïîëüçîâàí øàáëîí """ & file_location & """" & _
     vbNewLine & vbNewLine & "Ñãåíåðèðîâàííûå ïðîòîêîëû ÃÝÊ áóäóò ñîõðàíåíû â ïàïêó """ & file_folder & """" & _
@@ -48,8 +49,6 @@ Function Generation()   'Ôóíêöèÿ ãåíåðàöèè ôàéëîâ
 
     If default_setting = vbCancel Then Exit Function
     If default_setting = vbYes Then
-        
-        If IsNumeric(group) Then Else: MsgBox "Íåêîððåêòíî ââåäåí íîìåð ãðóïïû!": Exit Function
         
         If Dir(file_location) = "" Then MsgBox "Ôàéë  """ & file_location & """  íå íàéäåí", vbExclamation, "Ôàéë íå íàéäåí": GoTo select_sample:                                                                                   'Ïðîâåðêà íà ñóùåñòâîàíèå ôàéëà
 
@@ -145,6 +144,11 @@ End Function
 '    file_folder = NewFolderName & Application.PathSeparator                                'Íàçâàíèå ïàïêè, â êîòîðóþ ñãåíåðèðóþòñÿ ôàéëû
 '-----------------------
 
+Sub Past()
+    Range("B6").Select
+    ActiveSheet.PasteSpecial Format:="Òåêñò", Link:=False, DisplayAsIcon:=False
+End Sub
+
 Sub FillingColumns()
     Call last_line
 
@@ -154,6 +158,12 @@ Sub FillingColumns()
     For i = 6 To last_line_B
         If Range("C" & i) = "" Or Range("D" & i) = "" Then MsgBox "Ñòðîêà çàïîëíåíà íå ïîëíîñòüþ!", vbCritical: Exit Sub
     Next i
+    
+    If specialty_code = "" Or speciality = "" Or group = "" Or degree = "" Or date_GEK = "" Or date_certificate = "" Then
+        MsgBox "Íå çàïîëíåíà îäíà èëè íåñêîëüêî ÿ÷ååê â ñòðîêå ñ îáùèìè äàííûìè!": Exit Sub
+    End If
+        
+    If IsNumeric(group) Then Else: MsgBox "Íåêîððåêòíî ââåäåí íîìåð ãðóïïû!": Exit Sub
     
     Call GenitiveStudents
     Call GenitiveProfessor
@@ -187,7 +197,29 @@ Function FillingFormulas()
     Range("M6:M" & last_line_B) = degree
     Range("N6:N" & last_line_B) = date_GEK
     Range("O6:O" & last_line_B) = date_certificate
-
+    
+    If degree = "áàêàëàâð" Or degree = "ñïåöèàëèñò" Or degree = "ìàãèñòð" Then
+        If degree = "áàêàëàâð" Then
+            Range("M6:M" & last_line_B) = "áàêàëàâðà"
+            Range("P6:P" & last_line_B) = "áàêàëàâðèàòà"
+            Range("Q6:Q" & last_line_B) = "áàêàëàâðñêàÿ"
+            Range("R6:R" & last_line_B) = "áàêàëàâðñêîé"
+        End If
+        If degree = "ìàãèñòð" Then
+            Range("M6:M" & last_line_B) = "ìàãèñòðà"
+            Range("P6:P" & last_line_B) = "ìàãèñòðàòóðû"
+            Range("Q6:Q" & last_line_B) = "ìàãèñòåðñêàÿ"
+            Range("R6:R" & last_line_B) = "ìàãèñòåðñêîé"
+        End If
+        If degree = "ñïåöèàëèñò" Then
+            Range("M6:M" & last_line_B) = "ñïåöèàëèñòà"
+            Range("P6:P" & last_line_B) = "ñïåöèàëèòåòà"
+            Range("Q6:Q" & last_line_B) = "ñïåöèàëèòåòñêàÿ"
+            Range("R6:R" & last_line_B) = "ñïåöèàëèòåòñêîé"
+        End If
+    Else: MsgBox "Îøèáêà! Íåâåðíî óêàçàíà ïðèñâàèâàåìàÿ ó÷åíàÿ ñòåïåíü! Èñïðàâüòå îøèáêó è ïîâòîðèòå çàïîëíåíèå ñòîëáöîâ!", vbCritical
+    End If
+    
 '    Range("D3").Copy
 '    Range("I6:I" & last_line_B).PasteSpecial Paste:=xlPasteValues     'Çàïîëíåíèå ñòîëáöà ñ íîìåðîì ãðóïïû
 
