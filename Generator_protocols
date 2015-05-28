@@ -1,14 +1,16 @@
-Const sample1 = "Øàáëîí (çàùèòà ÂÊÐ).doc"         'Èìÿ ôàéëà-øàáëîíà ñ ðàñøèðåíèåì (ïî óìîë÷àíèþ)
-Const folder_name1 = "Çàùèòà ÂÊÐ"    'Èìÿ ïàïêè, â êîòîðóþ ñãåíåðèðóþòñÿ ôàéëû (ïî óìîë÷àíèþ)
+Const sample1 = "Øàáëîí (çàùèòà ÂÊÐ).doc"   'Èìÿ ôàéëà-øàáëîíà ñ ðàñøèðåíèåì (ïî óìîë÷àíèþ)
+Const folder_name1 = "Çàùèòà ÂÊÐ"           'Èìÿ ïàïêè, â êîòîðóþ ñãåíåðèðóþòñÿ ôàéëû (ïî óìîë÷àíèþ)
 Const sample2 = "Øàáëîí (ãîñýêçàìåí).doc"
 Const folder_name2 = "Ãîñýêçàìåí"
-Const file_extensions = ".doc"          'Ðàñøèðåíèå ãåíåðèðóåìûõ ôàéëîâ
-Const colomns = 18                      'Ïîñëåäíèé îáðàáàòûâàåìûé ñòîáöåö
-Dim folder_location, file_folder, file_location, specialty_code, specialty, date_GEK, date_certificate, degree As String
+Const file_extensions = ".doc"              'Ðàñøèðåíèå ãåíåðèðóåìûõ ôàéëîâ
+Const colomns = 19                          'Ïîñëåäíèé îáðàáàòûâàåìûé ñòîáöåö
+Dim folder_location, file_folder, file_location, password, specialty_code, specialty, date_GEK, date_certificate, degree As String
 Dim group, number_of_files, last_line_A, last_line_B, last_line_C, last_line_D, last_line_H As Integer
+Dim Errors As Boolean
 
-Function last_line()
-    last_line_A = Cells(Rows.Count, "A").End(xlUp).Row
+Function AssigningValues()
+    password = "mz15"
+    last_line_A = Cells(Rows.Count, "A").End(xlUp).Row  'Ïîñëåäíÿÿ çàïîëíåííàÿ ñòðîêà â ñòîëáöå
     last_line_B = Cells(Rows.Count, "B").End(xlUp).Row
     last_line_C = Cells(Rows.Count, "C").End(xlUp).Row
     last_line_D = Cells(Rows.Count, "D").End(xlUp).Row
@@ -20,11 +22,12 @@ Function last_line()
     degree = Range("E3")
     date_GEK = Range("F3")
     date_certificate = Range("G3")
+    Errors = False
 End Function
 
 Sub Generation1()
-    file_folder = Replace(ThisWorkbook.FullName, ThisWorkbook.name, folder_name1 & " " & group)    'Íàçâàíèå ïàïêè, â êîòîðóþ ñãåíåðèðóþòñÿ ôàéëû
-    file_location = Replace(ThisWorkbook.FullName, ThisWorkbook.name, sample1)   'Ðàñïîëîæåíèå øàáëîíà äëÿ ãåíåðèðóåìûõ ôàéëîâ
+    file_folder = Replace(ThisWorkbook.FullName, ThisWorkbook.name, folder_name1 & " " & group) 'Íàçâàíèå ïàïêè, â êîòîðóþ ñãåíåðèðóþòñÿ ôàéëû
+    file_location = Replace(ThisWorkbook.FullName, ThisWorkbook.name, sample1)                  'Ðàñïîëîæåíèå øàáëîíà äëÿ ãåíåðèðóåìûõ ôàéëîâ
     Call Generation
 End Sub
 
@@ -36,9 +39,8 @@ End Sub
 
 Function Generation()   'Ôóíêöèÿ ãåíåðàöèè ôàéëîâ
 
-    Call last_line
+    Call AssigningValues
     If number_of_files < 1 Then MsgBox "Íå çàäàíû ïàðàìåòðû äëÿ ãåíåðàöèè ôàéëîâ!", vbCritical: Exit Function
-                                                                   'Åñëè íå çàäàíû ïàðàìåòðû äëÿ ãåíåðàöèè õîòÿ áû îäíîãî ôàéëà
     If last_line_A <> last_line_B Then MsgBox "Îäíà èëè íåñêîëüêî ñòðîê çàïîëíåíû íå ïîëíîñòüþ!", vbCritical: Exit Function
     If IsNumeric(group) And group <> "" Then Else: MsgBox "Íåêîððåêòíî ââåäåí íîìåð ãðóïïû!": Exit Function
     
@@ -63,26 +65,26 @@ folder_exists:  MsgBox "Ïàïêà """ & file_folder & """ óæå ñóùåñòâ
     Else:
 select_sample:
 
-        With Application.FileDialog(msoFileDialogFilePicker)                                'Äèàëîã çàïðîñà âûáîðà ïàïêè
-'            .InitialFileName = Replace(ThisWorkbook.FullName, ThisWorkbook.name, "Øàáëîí.dot")
+        With Application.FileDialog(msoFileDialogFilePicker)    'Äèàëîã çàïðîñà âûáîðà ïàïêè
+'            .InitialFileName =
             .Title = "Âûáåðåòå ôàéë-øàáëîí"
             .AllowMultiSelect = False
             .ButtonName = "Âûáðàòü"
             .Show
-            If .SelectedItems.Count = False Then Exit Function                              'Åñëè íè÷åãî íå âûáðàíî, ïðîãðàììà çàâåðøàåòñÿ
-            file_location = .SelectedItems(1)                                               'Ðàñïîëîæåíèå ôàéëà-øàáëîíà
+            If .SelectedItems.Count = False Then Exit Function  'Åñëè íè÷åãî íå âûáðàíî, ïðîãðàììà çàâåðøàåòñÿ
+            file_location = .SelectedItems(1)                   'Ðàñïîëîæåíèå ôàéëà-øàáëîíà
         End With
 
 select_folder:
 
-        With Application.FileDialog(4)                                                      '(msoFileDialogFolderPicker) - äèàëîã çàïðîñà âûáîðà ôàéëà
-'            .InitialFileName = Replace(ThisWorkbook.FullName, ThisWorkbook.name, " ")
+        With Application.FileDialog(4)  '(msoFileDialogFolderPicker) - äèàëîã çàïðîñà âûáîðà ôàéëà
+'            .InitialFileName =
             .Title = "Âûáåðåòå ïàïêó, êóäà áóäóò ñîõðàíåíû ïðîòîêîëû ÃÝÊ"
             .AllowMultiSelect = False
             .ButtonName = "Âûáðàòü"
-            If .Show = False Then Exit Function                                             'Åñëè íè÷åãî íå âûáðàíî, ïðîãðàììà çàâåðøàåòñÿ
-            file_folder = .SelectedItems(1)                                                 'Ðàñïîëîæåíèå âûáðàííîé ïàïêè, â êîòîðóþ áóäóò ñîõðàíÿòüñÿ ôàéëû
-            folder_location = file_folder & Application.PathSeparator
+            If .Show = False Then Exit Function                         'Åñëè íè÷åãî íå âûáðàíî, ïðîãðàììà çàâåðøàåòñÿ
+            file_folder = .SelectedItems(1)                             'Ðàñïîëîæåíèå âûáðàííîé ïàïêè, â êîòîðóþ áóäóò ñîõðàíÿòüñÿ ôàéëû
+            folder_location = file_folder & Application.PathSeparator   'Äîáàâëåíèå \
         End With
     End If
 
@@ -91,191 +93,229 @@ no_error:
     Dim line As Range
     Dim WA As Object, WD As Object: Set WA = CreateObject("Word.Application")
     
-    For Each line In ActiveSheet.Rows("6:" & last_line_B)                                 'Öèêë ñ 5 ñòðîêè äî ïîñëåäíåé çàïîëíåííîé
+    For Each line In ActiveSheet.Rows("6:" & last_line_B)               'Öèêë ñ 6 ñòðîêè äî ïîñëåäíåé çàïîëíåííîé
         With line
-            name = Trim$(.Cells(2))                                                     'Ïðèñâîåíèå èìåí ãåíåðèðóåìûì ôàéëàì
-            file_name = folder_location & name & file_extensions                            'Ðàñïîëîæåíèå, èìÿ è ðàñøèðåíèå ñãåíåðèðîâàííûõ ôàéëîâ
+            name = Trim$(.Cells(2))                                     'Ïðèñâîåíèå èìåí ãåíåðèðóåìûì ôàéëàì
+            file_name = folder_location & name & file_extensions        'Ðàñïîëîæåíèå, èìÿ è ðàñøèðåíèå ñãåíåðèðîâàííûõ ôàéëîâ
 
             Set WD = WA.Documents.Add(file_location): DoEvents
             
-            For i = 2 To colomns                                                        'Öèêë ñ 1 ñòîëáöà äî ÷èñëà, ðàâíîìó êîë-âó îáðàáàòûâàåìûõ ñòîëáöîâ
-                FindText = Cells(4, i): ReplaceText = Trim$(.Cells(i))                  'Ïîèñê ñîâïàäåíèé ñ ìåòêàìè è çàìåíà íà çíà÷åíèÿ â áàçå äàííûõ
+            For i = 2 To colomns                                        'Öèêë ñ 1 ñòîëáöà äî ïîñëåäíåãî îáðàáàòûâàåìîãî ñòîëáöà
+                FindText = Cells(4, i): ReplaceText = Trim$(.Cells(i))  'Ïîèñê ñîâïàäåíèé ñ ìåòêàìè è çàìåíà íà çíà÷åíèÿ â áàçå äàííûõ
 
                 With WD.Range.Find
-                    .Text = FindText                                                    'Ìåòêà â øàáëîíå
-                    .Replacement.Text = ReplaceText                                     'Çàìåíà ìåòêè òåêñòîì èç áàçû äàííûõ
-                    '.Forward = True                                                     'Íàïðàâëåíèå ïîèñêà (âïåðåä/íàçàä)
-                    .MatchCase = True                                                   'Ó÷èòûâàòü ðåãèñòð
-                    .MatchWholeWord = True                                              'Èñêàòü ñëîâî öåëèêîì
-                    .MatchAllWordForms = False                                          'Âñå ñëîâîôîðìû
-                    .Execute Replace:=2                                                 'Çàìåíèòü âñ¸
+                    .Text = FindText                                    'Ìåòêà â øàáëîíå
+                    .Replacement.Text = ReplaceText                     'Çàìåíà ìåòêè òåêñòîì èç áàçû äàííûõ
+                    .Forward = True                                     'Íàïðàâëåíèå ïîèñêà (âïåðåä/íàçàä)
+                    .MatchCase = True                                   'Ó÷èòûâàòü ðåãèñòð
+                    .MatchWholeWord = True                              'Èñêàòü ñëîâî öåëèêîì
+                    .MatchAllWordForms = False                          'Âñå ñëîâîôîðìû
+                    .Execute Replace:=2                                 'Çàìåíèòü âñ¸
                 End With
                 DoEvents
             Next i
             
-            WD.SaveAs file_name: WD.Close False: DoEvents                               'Ñîõðàíåíèé è çàêðûòèå ñîçäàííîãî ôàéëà
+            WD.SaveAs file_name: WD.Close False: DoEvents   'Ñîõðàíåíèå è çàêðûòèå ñîçäàííîãî ôàéëà
         End With
-    Next line                                                                           'Ïåðåõîä ê ñëåäóþùåé èòåðàöèè öèêëà (ñòðîêå áàçû äàííûõ)
+    Next line   'Ïåðåõîä ê ñëåäóþùåé èòåðàöèè öèêëà (ñòðîêå áàçû äàííûõ)
     
     WA.Quit False
     MsgBox "Â ïàïêå """ & file_folder & """ ñîçäàíî " & number_of_files & " ôàéëîâ.", vbInformation, "Ãåíåðàöèÿ ïðîòîêîëîâ ÃÝÊ çàâåðøåíà"
 End Function
 
-'-----------------------------------------------------
-'    'Äðóãîé ñïîñîá ââîäà øàáëîíà è ïàïêè:
-'    Dim Log As Boolean
-'    Log = True
-'    While Log = True
-'NextIteration:
-'        sample = InputBox("Ââåäèòå èìÿ ôàéëà (ñ ðàñøèðåíèåì) øàáëîíà äëÿ ãåíåðèðóåìûõ ôàéëîâ." _
-'        & vbNewLine & vbNewLine & "Íàïðèìåð: øàáëîí.dot", "Øàáëîí", "øàáëîí.dot")   'Ââîä èìåíè ôàéëà øàáëîíà
-'        If sample = "" Or sample = " " Then GoTo NextIteration
-'        file_location = Replace(ThisWorkbook.FullName, ThisWorkbook.name, "øàáëîí.dot")   'Ðàñïîëîæåíèå øàáëîíà äëÿ ãåíåðèðóåìûõ ôàéëîâ
- '       If Dir(file_location) <> "" Then Log = False Else: MsgBox "Ôàéë  " & sample & "  íå íàéäåí", vbExclamation, "Ôàéë íå íàéäåí"                                                                                   'Ïðîâåðêà íà ñóùåñòâîàíèå ôàéëà
-'    Wend
-'    Log = True
-'    While Log = True
-'        NewFolderName = Replace(ThisWorkbook.FullName, ThisWorkbook.name, InputBox("Ââåäèòå èìÿ ïàïêè, êóäà áóäóò ñîõðàíåíû ñãåíåðèðîâàííûå ôàéëû", "Èìÿ ïàïêè"))
-' \/:"?*<>|
-'        MkDir NewFolderName 'Ñîçäàíèå íîâîãî êàòàëîãà (MkDir ðàñïîëîæåíèå)
-'        If Dir(NewFolderName) = "" Then Log = False Else: MsgBox "íåâåðíûé"
-'    Wend
-'    file_location = Replace(ThisWorkbook.FullName, ThisWorkbook.name, sample)              'Ðàñïîëîæåíèå øàáëîíà äëÿ ãåíåðèðóåìûõ ôàéëîâ
-'    file_folder = NewFolderName & Application.PathSeparator                                'Íàçâàíèå ïàïêè, â êîòîðóþ ñãåíåðèðóþòñÿ ôàéëû
-'-----------------------
-
 Sub Past()
+    Call AssigningValues
+    If Range("B6") <> "" Then MsgBox "Ñíà÷àëà íåîáõîäèìî î÷èñòèòü ñîäåðæèìîå ÿ÷ååê", vbCritical: Exit Sub
+    ActiveSheet.Unprotect (password)
+    Cells.Locked = False
     Range("B6").Select
     ActiveSheet.PasteSpecial Format:="Òåêñò", Link:=False, DisplayAsIcon:=False
+    Selection.Rows.AutoFit
+    Cells.Locked = True
+    Range("B3:G3").Locked = False
+    ActiveSheet.Protect (password)
 End Sub
 
-Sub FillingColumns()
-    Call last_line
-
-    If last_line_B <= 5 Then MsgBox "Ñíà÷àëà íåîáõîäèìî çàïîëíèòü õîòÿ áû îäíó ñòðîêó", vbCritical: Exit Sub
-    If last_line_B <> last_line_C Or last_line_B <> last_line_D Then MsgBox "Ñòðîêà çàïîëíåíà íå ïîëíîñòüþ!", vbCritical: Exit Sub
-
-    For i = 6 To last_line_B
-        If Range("C" & i) = "" Or Range("D" & i) = "" Then MsgBox "Ñòðîêà çàïîëíåíà íå ïîëíîñòüþ!", vbCritical: Exit Sub
-    Next i
-    
-    If specialty_code = "" Or speciality = "" Or group = "" Or degree = "" Or date_GEK = "" Or date_certificate = "" Then
-        MsgBox "Íå çàïîëíåíà îäíà èëè íåñêîëüêî ÿ÷ååê â ñòðîêå ñ îáùèìè äàííûìè!": Exit Sub
-    End If
-        
-    If IsNumeric(group) Then Else: MsgBox "Íåêîððåêòíî ââåäåí íîìåð ãðóïïû!": Exit Sub
-    
-    Call GenitiveStudents
-    Call GenitiveProfessor
-    Call FillingFormulas
+Sub UnlockCells()
+    ActiveSheet.Unprotect (password)
+    Cells.Locked = False
+    Range("A1:R5").Locked = True
+    Range("B3:G3").Locked = False
+    ActiveSheet.Protect (password)
 End Sub
-
 
 Sub Clearing()
     Dim last_line As Integer
 
+    ActiveSheet.Unprotect (password)
+    Cells.Locked = False
     For m = 1 To colomns
         last_line = Cells(Rows.Count, m).End(xlUp).Row
         If last_line < 6 Then Else Rows("6:" & last_line).ClearContents
     Next m
+    Cells.Locked = True
+    Range("B3:G3").Locked = False
+    ActiveSheet.Protect (password)
     
-    If specialty_code <> "" Or Range("C3") <> "" Then If MsgBox("Óäàëèòü êîä è íàçâàíèå ñïåöèàëüíîñòè?", vbYesNo) = vbYes Then Range("B3, C3").ClearContents
+    If Range("B3") <> "" Or Range("C3") <> "" Then If MsgBox("Óäàëèòü êîä è íàçâàíèå ñïåöèàëüíîñòè?", vbYesNo) = vbYes Then Range("B3, C3").ClearContents
     If Range("D3") <> "" Then If MsgBox("Óäàëèòü íîìåð ãðóïïû?", vbYesNo) = vbYes Then Range("D3").ClearContents
 
 End Sub
 
+Sub FillingColumns()
+    Call AssigningValues
+
+    If number_of_files < 1 Then MsgBox "Íå çàäàíû ïàðàìåòðû äëÿ ãåíåðàöèè ôàéëîâ!", vbCritical: Exit Sub
+    If last_line_B <> last_line_C Or last_line_B <> last_line_D Then MsgBox "Ïîñëåäíÿÿ ñòðîêà çàïîëíåíà íå ïîëíîñòüþ!", vbCritical: Exit Sub
+
+    For i = 6 To last_line_B
+        If Range("C" & i) = "" Or Range("D" & i) = "" Then
+        Range("B" & i & ":D" & i).Select
+        MsgBox "Âûäåëåííàÿ ñòðîêà çàïîëíåíà íå ïîëíîñòüþ!", vbCritical: Exit Sub
+        End If
+    Next i
+    
+    If specialty_code = "" Or specialty = "" Or group = "" Or degree = "" Or date_GEK = "" Or date_certificate = "" Then
+        MsgBox "Íå ïîëíîñòüþ çàïîëíåíà ñòðîêà ñ îáùèìè äàííûìè!": Exit Sub
+    End If
+        
+    If IsNumeric(group) Then
+    Else: MsgBox "Íåêîððåêòíî ââåäåí íîìåð ãðóïïû!"
+        Range("D3").Select
+        Exit Sub
+    End If
+    
+    ActiveSheet.Unprotect (password)
+    Cells.Locked = False
+
+    Call GenitiveStudents
+    
+    If Errors = True Then
+        Call Clearing2
+        GoTo Error_yes
+    End If
+    
+    Call GenitiveProfessor
+    
+    If Errors = True Then
+        Call Clearing2
+        GoTo Error_yes
+    End If
+    
+    
+    Call FillingFormulas
+    
+    If Errors = True Then
+        Call Clearing2
+        GoTo Error_yes
+    End If
+    
+Error_yes:
+    Cells.Locked = True
+    Range("B3:G3").Locked = False
+    ActiveSheet.Protect (password)
+End Sub
+
 Function FillingFormulas()
-    Call last_line
+    Call AssigningValues
+    Dim range_degree1, range_degree2, range_degree3, range_degree4, range_degree5 As String
     
     Range("A6:A" & last_line_B).Formula = "=ROW(A1)"                  'Çàïîëíåíèå ñòîëáöà ñ íóìåðàöèåé
     Range("E6:E" & last_line_B).Formula = Range("E1").Formula         'Ïðåîáðàçîâàíèå ïîëíîãî ÔÈÎ ñòóäåíòà â Ôàìèëèÿ È.Î.
     Range("G6:G" & last_line_D).Formula = Range("G1").Formula         'Ïðåîáðàçîâàíèå ïîëíîãî ÔÈÎ ðóêîâîäèòåëÿ â Ôàìèëèÿ È.Î.
     
+    If degree = "áàêàëàâð" Or degree = "ñïåöèàëèñò" Or degree = "ìàãèñòð" Then
+        If degree = "áàêàëàâð" Then
+            range_degree1 = "áàêàëàâðà"
+            range_degree2 = "áàêàëàâðèàò"
+            range_degree3 = "ÂÊÐ"
+            range_degree4 = "ÂÊÐ"
+            range_degree5 = "ÂÊÐ"
+        End If
+        If degree = "ìàãèñòð" Then
+            range_degree1 = "ìàãèñòðà"
+            range_degree2 = "ìàãèñòðàòóðó"
+            range_degree3 = "Ìàãèñòåðñêàÿ äåññåðòàöèÿ"
+            range_degree4 = "ìàãèñòåðñêîé äèññåðòàöèè"
+            range_degree5 = "ìàãèñòåðñêóþ äèññåðòàöèþ"
+        End If
+        If degree = "ñïåöèàëèñò" Then
+            range_degree1 = "ñïåöèàëèñòà"
+            range_degree2 = "ñïåöèàëèòåò"
+            range_degree3 = "ÂÊÐ"
+            range_degree4 = "ÂÊÐ"
+            range_degree5 = "ÂÊÐ"
+        End If
+    Else:
+        MsgBox "Íåâåðíî óêàçàíà ïðèñâàèâàåìàÿ ó÷åíàÿ ñòåïåíü! Èñïðàâüòå îøèáêó è ïîâòîðèòå çàïîëíåíèå ñòîëáöîâ!", vbCritical, "Îøèáêà!"
+        Errors = True: Exit Function
+    End If
+    
     Range("I6:I" & last_line_B) = group
     Range("J6:J" & last_line_B) = specialty
     Range("K6:K" & last_line_B) = specialty_code
-    Range("M6:M" & last_line_B) = degree
+    Range("M6:M" & last_line_B) = range_degree1
     Range("N6:N" & last_line_B) = date_GEK
     Range("O6:O" & last_line_B) = date_certificate
-    
-    If degree = "áàêàëàâð" Or degree = "ñïåöèàëèñò" Or degree = "ìàãèñòð" Then
-        If degree = "áàêàëàâð" Then
-            Range("M6:M" & last_line_B) = "áàêàëàâðà"
-            Range("P6:P" & last_line_B) = "áàêàëàâðèàòà"
-            Range("Q6:Q" & last_line_B) = "áàêàëàâðñêàÿ"
-            Range("R6:R" & last_line_B) = "áàêàëàâðñêîé"
-        End If
-        If degree = "ìàãèñòð" Then
-            Range("M6:M" & last_line_B) = "ìàãèñòðà"
-            Range("P6:P" & last_line_B) = "ìàãèñòðàòóðû"
-            Range("Q6:Q" & last_line_B) = "ìàãèñòåðñêàÿ"
-            Range("R6:R" & last_line_B) = "ìàãèñòåðñêîé"
-        End If
-        If degree = "ñïåöèàëèñò" Then
-            Range("M6:M" & last_line_B) = "ñïåöèàëèñòà"
-            Range("P6:P" & last_line_B) = "ñïåöèàëèòåòà"
-            Range("Q6:Q" & last_line_B) = "ñïåöèàëèòåòñêàÿ"
-            Range("R6:R" & last_line_B) = "ñïåöèàëèòåòñêîé"
-        End If
-    Else: MsgBox "Îøèáêà! Íåâåðíî óêàçàíà ïðèñâàèâàåìàÿ ó÷åíàÿ ñòåïåíü! Èñïðàâüòå îøèáêó è ïîâòîðèòå çàïîëíåíèå ñòîëáöîâ!", vbCritical
-    End If
-    
-'    Range("D3").Copy
-'    Range("I6:I" & last_line_B).PasteSpecial Paste:=xlPasteValues     'Çàïîëíåíèå ñòîëáöà ñ íîìåðîì ãðóïïû
+    Range("P6:P" & last_line_B) = range_degree2
+    Range("Q6:Q" & last_line_B) = range_degree3
+    Range("R6:R" & last_line_B) = range_degree4
+    Range("S6:S" & last_line_B) = range_degree5
+End Function
 
-'    Range("C3").Copy
-'    Range("J6:J" & last_line_B).PasteSpecial Paste:=xlPasteValues     'Çàïîëíåíèå ñòîëáöà ñ íàçâàíèåì ñïåöèàëüíîñòè
-
-'    Range("B3").Copy
-'   Range("K6:K" & last_line_B).PasteSpecial Paste:=xlPasteValues     'Çàïîëíåíèå ñòîëáöà ñ êîäîì ñïåöèàëüíîñòè
-  
-'    Range("E3").Copy
-'    Range("M6:M" & last_line_B).PasteSpecial Paste:=xlPasteValues     'Çàïîëíåíèå ñòîëáöà ñ ó÷åíîé ñòåïåíüþ
-
-'    Application.CutCopyMode = False
-    
-    
-    'Range("E6").AutoFill Destination:=Range("E6:E" & last_line)
-    '"=ËÅÂÑÈÌÂ(B6;ÏÎÈÑÊ(" ";B6)+1) & "." & ÏÑÒÐ(B6;ÏÎÈÑÊ(" ";B6;ÏÎÈÑÊ(" ";B6)+1)+1;1) & ".""
+Function Clearing2()
+    Dim last_line As Integer
+    For m = 5 To colomns
+        last_line = Cells(Rows.Count, m).End(xlUp).Row
+        If last_line > 5 Then Range("E6:R" & last_line).ClearContents
+    Next m
 End Function
 
 Function GenitiveStudents() 'Ôóíêöèÿ ñêëîíåíèÿ ÔÈÎ ñòóäåíòîâ â ðîäèòåëüíûé ïàäåæ
-   
-    Dim surname As String, name As String, patronymic As String
-   
-    Call last_line
+    Call AssigningValues
+    Dim surname As String, name As String, patronymic As String, text_msg As String
     
     For i = 6 To last_line_B
         Dim fname$(): fname = Split(Cells(i, "B")) 'Ïðåîáðàçîâàíèå â ìàññèâ ñ òðåìÿ ýëåìåíòàìè
         
-        text_msg = "Â îäíîé èëè íåñêîëüêèõ ñòðîêàõ íåêîððåêòíî çàïîëíåí ñòîëáåö ""ÔÈÎ ñòóäåíòà""." & _
+        text_msg = "Âûäåëåííàÿ ÿ÷åéêà çàïîëíåíà íåêîððåêòíî." & _
                     " Èñïðàâüòå îøèáêó è ïîâòîðèòå çàïîëíåíèå!"
-        If UBound(fname) < 2 Then MsgBox text_msg, vbCritical, "Îøèáêà â ñòîëáöå ""ÔÈÎ ñòóäåíòà""": Exit Function
-        If Len(fname(0)) = 0 Or Len(fname(1)) = 0 Or Len(fname(2)) = 0 Then MsgBox text_msg, vbCritical, "Îøèáêà â ñòîëáöå ""ÔÈÎ ñòóäåíòà""": Exit Function
+        If UBound(fname) < 2 Then
+            Range("B" & i).Select
+            MsgBox text_msg, vbCritical, "Îøèáêà â ñòîëáöå ""ÔÈÎ ñòóäåíòà"""
+            Errors = True: Exit Function
+        End If
+        
+        If Len(fname(0)) = 0 Or Len(fname(1)) = 0 Or Len(fname(2)) = 0 Then
+            MsgBox text_msg, vbCritical, "Îøèáêà â ñòîëáöå ""ÔÈÎ ñòóäåíòà"""
+            Range("B" & i).Select
+            Errors = True: Exit Function
+        End If
         
         surname = fname(0)
         name = fname(1)
         patronymic = fname(2)
         Cells(i, "F") = genitive(surname, name, patronymic)
         
-        If Right(patronymic, 1) <> "÷" Then Cells(i, "L") = "à"
+        If Right(patronymic, 1) <> "÷" Then Cells(i, "L") = "à" 'Îêîí÷àíèå â çàâèñèìîñòè îò ïîëà
     Next
 End Function
 
 Function GenitiveProfessor() 'Ôóíêöèÿ ñêëîíåíèÿ ÔÈÎ ðóêîâîäèòåëåé â ðîäèòåëüíûé ïàäåæ
-    Call last_line
+    Call AssigningValues
     Dim fio As Integer
+    Dim surname As String, name As String, patronymic As String, text_msg As String
+    
     For i = 6 To last_line_D 'Öèêë âûäåëåíèÿ ÔÈÎ ðóêîâîäèòåëåé èç ñòîëáöà D
         With Cells(i, "D")
             On Error GoTo error_full_name
                 fio = InStr(.Text, ",") 'Îïðåäåëåíèå ïîçèöèè ïåðâîé çàïÿòîé
-                Cells(i, "H") = Left(.Text, fio - 1) 'Îñòàâëÿåì òîëüêî ÔÈÎ
+                Cells(i, "H") = Left(.Text, fio - 1)    'Îñòàâëÿåì òîëüêî ÔÈÎ
         End With
     Next
 
-    Dim surname As String, name As String, patronymic As String
     For i = 6 To last_line_D
-        Dim fname$(): fname = Split(Cells(i, "H")) 'Ïðåîáðàçîâàíèå â ìàññèâ ñ òðåìÿ ýëåìåíòàìè
+        Dim fname$(): fname = Split(Cells(i, "H"))  'Ïðåîáðàçîâàíèå â ìàññèâ ñ òðåìÿ ýëåìåíòàìè
         
         If Len(fname(0)) = 0 Or Len(fname(1)) = 0 Or Len(fname(2)) = 0 Then GoTo error_full_name
         surname = fname(0)
@@ -285,9 +325,11 @@ Function GenitiveProfessor() 'Ôóíêöèÿ ñêëîíåíèÿ ÔÈÎ ðóêî�
     Next
     GoTo no_error_full_name
 error_full_name:
-    text_msg = "Â îäíîé èëè íåñêîëüêèõ ñòðîêàõ íåêîððåêòíî çàïîëíåí ñòîëáåö ""ÔÈÎ, ó÷. ñòåïåíü, ó÷. çíàíèå, äîëæíîñòü""." & _
-    " Èñïðàâüòå îøèáêó è ïîâòîðèòå çàïîëíåíèå!"
+    Range("D" & i).Select
+    text_msg = "Âûäåëåííàÿ ÿ÷åéêà çàïîëíåíà íåêîððåêòíî." & _
+                    " Èñïðàâüòå îøèáêó è ïîâòîðèòå çàïîëíåíèå!"
     MsgBox text_msg, vbCritical, "Îøèáêà â ñòîëáöå ""ÔÈÎ, ó÷. ñòåïåíü, ó÷. çíàíèå, äîëæíîñòü"""
+    Errors = True
 no_error_full_name:
 End Function
 
@@ -365,28 +407,14 @@ Function genitive(surname As String, name As String, patronymic As String) As St
 End Function
 
 Sub Manual()
-user_manual = "1. Â ôàéëå MSWord ñî ñïèñêîì òåì è ðóêîâîäèòåëåé ñêîïèðîâàòü èç òàáëèöû âñå ñòîëáöû, êðîìå  ""¹ ï/ï""." & vbNewLine & _
-"2. Â ôàéëå MSExcel ""Ãåíåðàòîð ïðîòîêîëîâ ÃÝÊ"" " & _
-    "âûäåëèòü ÿ÷åéêó B6 (ïåðâàÿ ñòðîêà äëÿ çàïîëíåíèÿ; ñòîëáåö ""ÔÈÎ ñòóäåíòà"")." & vbNewLine & _
-"5. Âñòàâèòü ñêîïèðîâàííûå äàííûå, èñïîëüçóÿ ""ñïåöèàëüíóþ âñòàâêó"". Äëÿ ýòîãî âîñïîëüçîâàòüñÿ ïðàâîé êíîïêîé ìûøè èëè ñî÷åòàíèåì êëàâèø Ctrl+Alt+V. " & _
-    "Âûáðàòü ""Òåêñò"" è íàæàòü ""ÎÊ"". " & vbNewLine & _
-"6. Çàïîëíèòü ÿ÷åéêè B2, C2, D2 (""Êîä íàïðàâëåíèÿ"", ""Íàçâàíèå íàïðàâëåíèÿ"", ""Íîìåð ãðóïïû"") " & _
-    "ëèáî âðó÷íóþ, ëèáî ñêîïèðîâàòü äàííûå èç ôàéëà MSWord ñî ñïèñêîì òåì è ðóêîâîäèòåëåé." & vbNewLine & _
-"7. Íàæàòü êíîïêó ""Çàïîëíèòü ñòîëáöû"". Åñëè íå ïîÿâèëîñü ñîîáùåíèå ñ îøèáêîé, ïðîâåðèòü ÿ÷åéêè, âûäåëåííûå ãîëóáûì öâåòîì, " & _
-    "íà ïðàâèëüíîñòü ñêëîíåíèÿ è ïðåîáðàçîâàíèÿ ïîëíîãî ÔÈÎ â ôàìèëèþ È.Î. Ïðè îáíàðóæåíèè îøèáêè, èñïðàâèòü âðó÷íóþ è ñîîáùèòü îá ýòîì àâòîðó ïðîãðàììû." & vbNewLine & _
-"8. Íàæàòü êïîïêó ""Ãåíåðàöèÿ ïðîòîêîëîâ"". Äîæäàòüñÿ, êîãäà ïîÿâèòñÿ ñîîáùåíèå î çàâåðøåíèè ãåíåðàöèè ïðîòîêîëîâ ÃÝÊ."
+user_manual = "1. Èç ôàéëà MSWord ñî ñïèñêîì òåì è ðóêîâîäèòåëåé ñêîïèðîâàòü èç òàáëèöû âñå ñòîëáöû, êðîìå  ""¹ ï/ï""." & vbNewLine & _
+"2. Â ôàéëå MSExcel ""Ãåíåðàòîð ïðîòîêîëîâ ÃÝÊ"" íàæàòü êíîïêó ""Âñòàâèòü ÿ÷åéêè""." & vbNewLine & _
+"3. Çàïîëíèòü ÿ÷åéêè B3-G3 (""Êîä íàïðàâëåíèÿ"" è ò.ä.)" & vbNewLine & _
+"4. Íàæàòü ""Çàïîëíèòü ñòîëáöû"". Åñëè íå ïîÿâèëîñü ñîîáùåíèå îá îøèáêå, ïðîâåðèòü ÿ÷åéêè, âûäåëåííûå ãîëóáûì öâåòîì, " & _
+    "íà ïðàâèëüíîñòü ñêëîíåíèÿ è ïðåîáðàçîâàíèÿ ïîëíîãî ÔÈÎ â ôàìèëèþ È.Î. Ïðè îáíàðóæåíèè îøèáêè, íàæàòü ""Ðàçáëîêèðîâàòü ÿ÷åéêè"", " & _
+    "èñïðàâèòü âðó÷íóþ è ñîîáùèòü îá ýòîì àâòîðó ïðîãðàììû (and-pleshkov-1996@yandex.ru)." & vbNewLine & _
+"5. Íàæàòü êïîïêó ""Ñãåíåðèðîâàòü ïðîòîêîëû íà çàùèòó ÂÊÐ"". Ïîñëå ïîÿâëåíèÿ ñîîáùåíèÿ î çàâåðøåíèè ãåíåðàöèè " & _
+    "íàæàòü ""Ñãåíåðèðîâàòü ïðîòîêîëû íà ãîñýêçàìåí""." & vbNewLine & _
+"6. Ïîñëå çàâåðøåíèÿ ãåíåðàöèè ìîæíî íàæàòü êíîïêó ""Î÷èñòèòü ñîäåðæèìîå"" è âûïîëíèòü òå æå äåéñòâèÿ äëÿ ãåíåðàöèè ïðîòîêîëîâ äëÿ äðóãîé ãðóïïû."
 MsgBox user_manual, , "Ðóêîâîäñòâî ïîëüçîâàòåëÿ"
-
-perepolnenie = "1. Îòêðûòü ôàéë MSWord ñî ñïèñêîì òåì è ðóêîâîäèòåëåé." & vbNewLine & _
-"2. Èç ïåðâîé òàáëèöû ñêîïèðîâàòü âñå ñòîëáöû, êðîìå  ""¹ ï/ï""." & vbNewLine & _
-"3. Îòêðûòü ôàéë MSExcel ""Ãåíåðàòîð ïðîòîêîëîâ ÃÝÊ""." & vbNewLine & _
-"4. Âûäåëèòü ÿ÷åéêó B6 (ïåðâàÿ ñòðîêà äëÿ çàïîëíåíèÿ; ñòîëáåö ""ÔÈÎ ñòóäåíòà"")" & vbNewLine & _
-"5. Âñòàâèòü ñêîïèðîâàííûå äàííûå, èñïîëüçóÿ ""ñïåöèàëüíóþ âñòàâêó"". Äëÿ ýòîãî ìîæíî âîñïîëüçîâàòüñÿ ïðàâîé êíîïêîé ìûøè èëè ñî÷åòàíèåì êëàâèø Ctrl+Alt+V. " & _
-    "Â ïîÿâèâøåìñÿ îêíå âûáðàòü ""Òåêñò"" è íàæàòü ""ÎÊ"". " & _
-    "Åñëè òàáëèöà â ôàéëå MSWord ñî ñïèñêîì òåì è ðóêîâîäèòåëåé áûëà çàïîëíåííà êîððåêòíî, " & _
-    "òî ïîñëå âñòàâêè ñòîëáöû âî âñåõ ñòðîêàõ áóäóò çàïîëíåíû áåç ïóñòûõ ÿ÷ååê." & vbNewLine & _
-"6. Çàïîëíèòü ÿ÷åéêè B2, C2, D2 (""Êîä íàïðàâëåíèÿ"", ""Íàçâàíèå íàïðàâëåíèÿ"", ""Íîìåð ãðóïïû"") " & _
-    "ëèáî âðó÷íóþ, ëèáî ñêîïèðîâàòü äàííûå èç ôàéëà MSWord ñî ñïèñêîì òåì è ðóêîâîäèòåëåé." & vbNewLine & _
-"7. Íàæàòü êíîïêó ""Çàïîëíèòü ñòîëáöû"". Åñëè íå ïîÿâèëîñü ñîîáùåíèå ñ îøèáêîé, ïðîâåðèòü ÿ÷åéêè, âûäåëåííûå ãîëóáûì öâåòîì, " & _
-    "íà ïðàâèëüíîñòü ñêëîíåíèÿ è ïðåîáðàçîâàíèÿ ïîëíîãî ÔÈÎ â ôàìèëèþ È.Î. Ïðè îáíàðóæåíèè îøèáêè, èñïðàâèòü âðó÷íóþ è ñîîáùèòü îá ýòîì àâòîðó ïðîãðàììû."
 End Sub
