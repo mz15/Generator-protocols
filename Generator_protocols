@@ -1,4 +1,4 @@
-'autor: Pleshkov Andrey
+'autor: Pleshkov Andrey, ITMO University, group 165. 2015
 Const sample1 = "Øàáëîí (çàùèòà ÂÊÐ).doc"   'Èìÿ ôàéëà-øàáëîíà ñ ðàñøèðåíèåì (ïî óìîë÷àíèþ)
 Const folder_name1 = "Çàùèòà ÂÊÐ"           'Èìÿ ïàïêè, â êîòîðóþ ñãåíåðèðóþòñÿ ôàéëû (ïî óìîë÷àíèþ)
 Const sample2 = "Øàáëîí (ãîñýêçàìåí).doc"
@@ -51,6 +51,18 @@ Function Generation()   'Ôóíêöèÿ ãåíåðàöèè ôàéëîâ
     If number_of_files < 1 Then MsgBox "Íå çàäàíû ïàðàìåòðû äëÿ ãåíåðàöèè ôàéëîâ!", vbCritical: Exit Function
     If last_line_A <> last_line_B Then MsgBox "Îäíà èëè íåñêîëüêî ñòðîê çàïîëíåíû íå ïîëíîñòüþ!", vbCritical: Exit Function
     If IsNumeric(group) And group <> "" Then Else: MsgBox "Íåêîððåêòíî ââåäåí íîìåð ãðóïïû!": Exit Function
+    
+    For m = 6 To last_line_B
+        With Cells(m, "B")
+                If InStr(.Text, "\") > 0 Or InStr(.Text, "/") > 0 Or InStr(.Text, "|") > 0 Or InStr(.Text, "?") > 0 Or InStr(.Text, """") > 0 Or _
+                InStr(.Text, ":") > 0 Or InStr(.Text, "*") > 0 Or InStr(.Text, "<") > 0 Or InStr(.Text, ">") > 0 Then
+                    Cells(m, "B").Select
+                    MsgBox "Âûäåëåííàÿ ÿ÷åéêà ñîäåðæèò íåäîïóñòèìûå ñèìâîëû \ / : "" ? * < > |", vbCritical, "Îøèáêà!"
+                    Exit Function
+                End If
+        End With
+    Next
+    
     
     Dim default_setting As String
     default_setting = MsgBox("Ïî óìîë÷àíèþ áóäåò èñïîëüçîâàí øàáëîí """ & file_location & """" & _
@@ -176,6 +188,7 @@ End Sub
 
 Sub FillingColumns()
     Call AssigningValues
+    Dim i, m As Integer
 
     If number_of_files < 1 Then MsgBox "Íå çàäàíû ïàðàìåòðû äëÿ ãåíåðàöèè ôàéëîâ!", vbCritical: Exit Sub
     If last_line_B <> last_line_C Or last_line_B <> last_line_D Then MsgBox "Ïîñëåäíÿÿ ñòðîêà çàïîëíåíà íå ïîëíîñòüþ!", vbCritical: Exit Sub
@@ -196,6 +209,17 @@ Sub FillingColumns()
         Range("D3").Select
         Exit Sub
     End If
+    
+    For m = 6 To last_line_B
+        With Cells(m, "B")
+                If InStr(.Text, "\") > 0 Or InStr(.Text, "/") > 0 Or InStr(.Text, "|") > 0 Or InStr(.Text, "?") > 0 Or InStr(.Text, """") > 0 Or _
+                InStr(.Text, ":") > 0 Or InStr(.Text, "*") > 0 Or InStr(.Text, "<") > 0 Or InStr(.Text, ">") > 0 Then
+                    Cells(m, "B").Select
+                    MsgBox "Âûäåëåííàÿ ÿ÷åéêà ñîäåðæèò íåäîïóñòèìûå ñèìâîëû \ / : "" ? * | < >", vbCritical, "Îøèáêà!"
+                    Exit Sub
+                End If
+        End With
+    Next
     
     ActiveSheet.Unprotect (password)
     Cells.Locked = False
